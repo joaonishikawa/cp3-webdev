@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo Online</title>
+    <style>
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .filtros {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .produto {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .produto:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .produto.disponivel {
+            background-color: #e8f5e9;
+        }
+        
+        .produto.indisponivel {
+            background-color: #ffebee;
+        }
+
+        select, button {
+            padding: 8px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #1976D2;
+        }
+
+        .secao-categoria {
+            margin-bottom: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #ddd;
+        }
+
+        .secao-categoria h2 {
+            color: #333;
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="filtros">
+            <button onclick="mostrarTodos()">Listar Todos</button>
+            <select id="categoriaSelect">
+                <option value="">Todas as categorias</option>
+            </select>
+            <label>
+                <input type="checkbox" id="somenteDisponiveis"> Somente disponíveis
+            </label>
+            <select id="ordemSelect">
+                <option value="padrao">Ordem Padrão</option>
+                <option value="precoAsc">Preço: Crescente</option>
+                <option value="precoDesc">Preço: Decrescente</option>
+            </select>
+            <button onclick="filtrarProdutos()">Filtrar</button>
+        </div>
+        <div id="produtosContainer"></div>
+    </div>
+
+    <script>
+        // Array de produtos
+        const produtos = [
+            { id: 1, nome: 'Camiseta Azul', preco: 89.99, categoria: 'Vestuário', disponibilidade: true },
+            { id: 2, nome: 'Iphone 13', preco: 2999.99, categoria: 'Eletrônicos', disponibilidade: true },
+            { id: 3, nome: 'Tenis ', preco: 249.90, categoria: 'Calçados', disponibilidade: false },
+            { id: 4, nome: 'PC Gamer', preco: 5999.99, categoria: 'Eletrônicos', disponibilidade: true },
+            { id: 5, nome: 'Bolsa Feminina', preco: 199.90, categoria: 'Acessórios', disponibilidade: true },
+            { id: 6, nome: 'Smartwatch', preco: 499.99, categoria: 'Eletrônicos', disponibilidade: true },
+            { id: 7, nome: 'Jaqueta Jeans', preco: 149.90, categoria: 'Vestuário', disponibilidade: true },
+            { id: 8, nome: 'Sapato Social', preco: 299.90, categoria: 'Calçados', disponibilidade: false },
+            { id: 9, nome: 'Tablet', preco: 1299.99, categoria: 'Eletrônicos', disponibilidade: true },
+            { id: 10, nome: 'Relógio', preco: 399.90, categoria: 'Acessórios', disponibilidade: true }
+        ];
+
+        // Função para popular o select de categorias
+        function popularCategorias() {
+            const select = document.getElementById('categoriaSelect');
+            const categoriasUnicas = [...new Set(produtos.map(p => p.categoria))];
+            
+            categoriasUnicas.forEach(categoria => {
+                const option = document.createElement('option');
+                option.value = categoria;
+                option.textContent = categoria;
+                select.appendChild(option);
+            });
+        }
+
+        // Função para ordenar produtos
+        function ordenarProdutos(produtosParaOrdenar, ordem) {
+            switch(ordem) {
+                case 'precoAsc':
+                    return [...produtosParaOrdenar].sort((a, b) => a.preco - b.preco);
+                case 'precoDesc':
+                    return [...produtosParaOrdenar].sort((a, b) => b.preco - a.preco);
+                default:
+                    return produtosParaOrdenar;
+            }
+        }
+
+        //filtrar produtos
+        function filtrarProdutos() {
+            const categoriaSelecionada = document.getElementById('categoriaSelect').value;
+            const somenteDisponiveis = document.getElementById('somenteDisponiveis').checked;
+            const ordemSelecionada = document.getElementById('ordemSelect').value;
+            
+            let produtosFiltrados = produtos.filter(produto => {
+                const categoriaMatch = !categoriaSelecionada || produto.categoria === categoriaSelecionada;
+                const disponibilidadeMatch = !somenteDisponiveis || produto.disponibilidade;
+                return categoriaMatch && disponibilidadeMatch;
+            });
+
+            produtosFiltrados = ordenarProdutos(produtosFiltrados, ordemSelecionada);
+            exibirProdutosAgrupados(produtosFiltrados);
+        }
+
+        //mostrar todos os produtos
+        function mostrarTodos() {
+            document.getElementById('categoriaSelect').value = '';
+            document.getElementById('somenteDisponiveis').checked = false;
+            document.getElementById('ordemSelect').value = 'padrao';
+            exibirProdutosAgrupados(produtos);
+        }
+
+        //exibir produtos por categoria
+        function exibirProdutosAgrupados(produtosParaExibir) {
+            const container = document.getElementById('produtosContainer');
+            container.innerHTML = '';
+
+            const categoriasUnicas = [...new Set(produtosParaExibir.map(p => p.categoria))];
+
+            categoriasUnicas.forEach(categoria => {
+                const produtosDaCategoria = produtosParaExibir.filter(p => p.categoria === categoria);
+
+                if (produtosDaCategoria.length > 0) {
+                    const secao = document.createElement('div');
+                    secao.className = 'secao-categoria';
+                    
+                    const tituloSecao = document.createElement('h2');
+                    tituloSecao.textContent = categoria;
+                    secao.appendChild(tituloSecao);
+
+                    produtosDaCategoria.forEach(produto => {
+                        const divProduto = document.createElement('div');
+                        divProduto.className = `produto ${produto.disponibilidade ? 'disponivel' : 'indisponivel'}`;
+                        
+                        divProduto.innerHTML = `
+                            <h3>${produto.nome}</h3>
+                            <p>Preço: R$ ${produto.preco.toFixed(2)}</p>
+                            <p>Categoria: ${produto.categoria}</p>
+                            <p>Status: ${produto.disponibilidade ? 'Disponível' : 'Indisponível'}</p>
+                        `;
+                        
+                        secao.appendChild(divProduto);
+                    });
+
+                    container.appendChild(secao);
+                }
+            });
+        }
+
+        popularCategorias();
+        mostrarTodos();
+    </script>
+</body>
+</html>
