@@ -1,6 +1,6 @@
 # 🛒 Catálogo de Produtos - Checkpoint 3
 
-Projeto desenvolvido para o **Checkpoint 3 de Front-End**, com foco em manipulação de **DOM, arrays e objetos** no JavaScript.
+Projeto desenvolvido para o **Checkpoint 3 de Webdev**, com foco em manipulação de **DOM, arrays e objetos** no JavaScript.
 
 ---
 
