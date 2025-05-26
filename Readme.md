@@ -6,7 +6,7 @@ Projeto desenvolvido para o **Checkpoint 3 de Webdev**, com foco em manipulaçã
 
 ## 👥 Integrantes do Grupo
 
-- **Vinicius Mafra Paiva**  
+- **Vinicius Mafra Paiva** - RM565916
 - **João Pedro Nishikawa** – RM562376
 
 ---
